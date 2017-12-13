@@ -13,6 +13,7 @@ public class MainFrame extends JFrame {
     //∥       3 = 1p                                    ∥
     //∥       4 = 2p                                    ∥
     //∥       5 = 炸彈                                 ∥
+    //∥       6 = 有炸彈有人                            ∥
     // ==================================================
     //物件圖片
     private ImageIcon imgeGrass = new ImageIcon("grass.jpg");
@@ -20,6 +21,8 @@ public class MainFrame extends JFrame {
     private ImageIcon imgeStone2 = new ImageIcon("stone2.jpg");
     private ImageIcon imgeBrick = new ImageIcon("brick.jpg");
     private ImageIcon imgeBomb = new ImageIcon("bomb.jpg");
+    private ImageIcon imge1pSBomb = new ImageIcon("1pSbomb.jpg");
+    private ImageIcon imge2pSBomb = new ImageIcon("2pSbomb.jpg");
     private ImageIcon imgeFire = new ImageIcon("fire.jpg");
     private ImageIcon imgeFireW = new ImageIcon("firew.jpg");
     private ImageIcon imgeFireA = new ImageIcon("firea.jpg");
@@ -44,18 +47,19 @@ public class MainFrame extends JFrame {
     private JMenuItem jmiNG = new JMenuItem("New Game");
     private JMenuItem jmiHelp = new JMenuItem("Help");
 
-    private Timer BombTime;
-    private int bt =0;
-    private int xb =0;
-    private int yb =0;
+    private Timer BombTime1P;
+    private Timer BombTime2P;
+    private int onePbt =0;
+    private int twoPbt =0;
+    private int oxb =0;
+    private int oyb =0;
+    private int txb =0;
+    private int tyb =0;
     private boolean b = true;
+    private boolean c = true;
 
 
-
-
-
-
-    int x1 = 7, y1 = 7 ,x2 =0, y2 =0;
+    int x1 = 0, y1 = 0 ,x2 = 7, y2 = 7;
 
     public MainFrame() {
         init();
@@ -66,7 +70,7 @@ public class MainFrame extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         cp = this.getContentPane();
         cp.setLayout(new GridLayout(8, 8, 0, 0));
-        setBounds(0, 0, 1000, 900);
+        setBounds(0, 0, 1000, 1010);
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -108,8 +112,8 @@ public class MainFrame extends JFrame {
         jlbsCode[0][0]=3;
         jlbsCode[7][7]=4;
 
-        jlbs[x2][y2].setIcon(imge1pS);
-        jlbs[x1][y1].setIcon(imge2pS);
+        jlbs[x1][y1].setIcon(imge1pS);
+        jlbs[x2][y2].setIcon(imge2pS);
 
 
 
@@ -121,209 +125,359 @@ public class MainFrame extends JFrame {
                 switch( i )
                 {
                     case 37: //往左
-                        if(x1==0||jlbsCode[y1][x1-1]!=0){
+                        if(x2==0||jlbsCode[y2][x2-1]!=0) {
+                            if(jlbsCode[y2][x2]!=6) {
+                                jlbs[y2][x2].setIcon(imge2pA);
+                                break;
+                            }
+                        }
+                        else if(jlbsCode[y2][x2]==6){
+
+                            x2--;
+                            jlbs[y2][x2+1].setIcon(imgeBomb);
+                            jlbsCode[y2][x2+1]=5;
+                            jlbs[y2][x2].setIcon(imge2pA);
+                            jlbsCode[y2][x2]=4;
+
                             break;
                         }else {
-                            jlbsCode[y1][x1]=0;                  //設定人物原始位置編號為0
-                            jlbs[y1][x1].setIcon(imgeGrass);     //設定人物原始位置圖片
-                            x1--;                                //改變人物位置值
-                            jlbs[y1][x1].setIcon(imge2pS);       //設定人物現在位置圖片
-                            jlbsCode[y1][x1]=3;                  //設定人物現在位置編號
+                            x2--;
+                            jlbsCode[y2][x2+1]=0;
+                            jlbs[y2][x2+1].setIcon(imgeGrass);
+                            jlbs[y2][x2].setIcon(imge2pA);
+                            jlbsCode[y2][x2]=4;
                             break;
                         }
+
+
                     case 38: //往上
-                        if(y1==0||jlbsCode[y1-1][x1]!=0){
+                        if(y2==0||jlbsCode[y2-1][x2]!=0){
+                            if(jlbsCode[y2][x2]!=6) {   //防止腳色於炸彈上移動時覆蓋炸彈
+                                jlbs[y2][x2].setIcon(imge2pW);
+                                break;
+                            }
+                        }
+                        else if(jlbsCode[y2][x2]==6){  //放置炸彈移動後設定炸彈位置以移動
+
+                            y2--;
+                            jlbs[y2+1][x2].setIcon(imgeBomb);
+                            jlbsCode[y2+1][x2]=5;
+                            jlbs[y2][x2].setIcon(imge2pW);
+                            jlbsCode[y2][x2]=4;
+
                             break;
-                        }else {
-                            jlbsCode[y1][x1]=0;
-                            jlbs[y1][x1].setIcon(imgeGrass);
-                            y1--;
-                            jlbs[y1][x1].setIcon(imge2pS);
-                            jlbsCode[y1][x1]=3;
+                        }else { //人物移動設地原本位置圖片以及移動之後位置圖片
+                            y2--;
+                            jlbsCode[y2+1][x2]=0;
+                            jlbs[y2+1][x2].setIcon(imgeGrass);
+                            jlbs[y2][x2].setIcon(imge2pW);
+                            jlbsCode[y2][x2]=4;
                             break;
                         }
+
                     case 39: //往右
-                        if(x1==7||jlbsCode[y1][x1+1]!=0){
+                        if(x2==7||jlbsCode[y2][x2+1]!=0){
+                            if(jlbsCode[y2][x2]!=6) {
+                                jlbs[y2][x2].setIcon(imge2pD);
+                                break;
+                            }
+                        }
+                        else if(jlbsCode[y2][x2]==6){
+
+                            x2++;
+                            jlbs[y2][x2-1].setIcon(imgeBomb);
+                            jlbsCode[y2][x2-1]=5;
+                            jlbs[y2][x2].setIcon(imge2pD);
+                            jlbsCode[y2][x2]=4;
+
                             break;
-                        }else {
-                            jlbsCode[y1][x1]=0;
-                            jlbs[y1][x1].setIcon(imgeGrass);
-                            x1++;
-                            jlbs[y1][x1].setIcon(imge2pS);
-                            jlbsCode[y1][x1]=3;
+                        }else{
+                            x2++;
+                            jlbsCode[y2][x2-1]=0;
+                            jlbs[y2][x2-1].setIcon(imgeGrass);
+                            jlbs[y2][x2].setIcon(imge2pD);
+                            jlbsCode[y2][x2]=4;
                             break;
                         }
+
+
                     case 40: //往下
-                        if(y1==7||jlbsCode[y1+1][x1]!=0){
+                        if(y2==7||jlbsCode[y2+1][x2]!=0){
+                            if(jlbsCode[y2][x2]!=6) {
+                                jlbs[y2][x2].setIcon(imge2pS);
+                                break;
+                            }
+                        }
+                        else if(jlbsCode[y2][x2]==6){
+
+                            y2++;
+                            jlbs[y2-1][x2].setIcon(imgeBomb);
+                            jlbsCode[y2-1][x2]=5;
+                            jlbs[y2][x2].setIcon(imge2pS);
+                            jlbsCode[y2][x2]=4;
+
                             break;
                         }else {
-                            jlbsCode[y1][x1]=0;
-                            jlbs[y1][x1].setIcon(imgeGrass);
-                            y1++;
-                            jlbs[y1][x1].setIcon(imge2pS);
-                            jlbsCode[y1][x1]=3;
+                            y2++;
+                            jlbsCode[y2-1][x2]=0;
+                            jlbs[y2-1][x2].setIcon(imgeGrass);
+                            jlbs[y2][x2].setIcon(imge2pS);
+                            jlbsCode[y2][x2]=4;
                             break;
                         }
                     case 87: //W
-                        if(y2==0||jlbsCode[y2-1][x2]!=0){
-                            if(jlbsCode[y2][x2]!=5) {
-                                jlbs[y2][x2].setIcon(imge1pW);
+                        if(y1==0||jlbsCode[y1-1][x1]!=0){
+                            if(jlbsCode[y1][x1]!=6) {   //防止腳色於炸彈上移動時覆蓋炸彈
+                                jlbs[y1][x1].setIcon(imge1pW);
                                 break;
                             }
                         }
-                        else if(jlbsCode[y2][x2]==5){
-                            y2--;
-                            jlbs[y2][x2].setIcon(imge1pW);
-                            jlbsCode[y2][x2]=4;
+                        else if(jlbsCode[y1][x1]==6){  //放置炸彈移動後設定炸彈位置以移動
+
+                            y1--;
+                            jlbs[y1+1][x1].setIcon(imgeBomb);
+                            jlbsCode[y1+1][x1]=5;
+                            jlbs[y1][x1].setIcon(imge1pW);
+                            jlbsCode[y1][x1]=4;
+
                             break;
-                        }else {
-                            jlbsCode[y2][x2]=0;
-                            jlbs[y2][x2].setIcon(imgeGrass);
-                            y2--;
-                            jlbs[y2][x2].setIcon(imge1pW);
-                            jlbsCode[y2][x2]=4;
+                        }else { //人物移動設地原本位置圖片以及移動之後位置圖片
+                            y1--;
+                            jlbsCode[y1+1][x1]=0;
+                            jlbs[y1+1][x1].setIcon(imgeGrass);
+                            jlbs[y1][x1].setIcon(imge1pW);
+                            jlbsCode[y1][x1]=4;
                             break;
                         }
                     case 83: //S
-                        if(y2==7||jlbsCode[y2+1][x2]!=0){
-                            if(jlbsCode[y2][x2]!=5) {
-                                jlbs[y2][x2].setIcon(imge1pS);
+                        if(y1==7||jlbsCode[y1+1][x1]!=0){
+                            if(jlbsCode[y1][x1]!=6) {
+                                jlbs[y1][x1].setIcon(imge1pS);
                                 break;
                             }
                         }
-                        else if(jlbsCode[y2][x2]==5){
-                            y2++;
-                            jlbs[y2][x2].setIcon(imge1pS);
-                            jlbsCode[y2][x2]=4;
+                        else if(jlbsCode[y1][x1]==6){
+
+                            y1++;
+                            jlbs[y1-1][x1].setIcon(imgeBomb);
+                            jlbsCode[y1-1][x1]=5;
+                            jlbs[y1][x1].setIcon(imge1pS);
+                            jlbsCode[y1][x1]=4;
+
                             break;
                         }else {
-                            jlbsCode[y2][x2]=0;
-                            jlbs[y2][x2].setIcon(imgeGrass);
-                            y2++;
-                            jlbs[y2][x2].setIcon(imge1pS);
-                            jlbsCode[y2][x2]=4;
+                            y1++;
+                            jlbsCode[y1-1][x1]=0;
+                            jlbs[y1-1][x1].setIcon(imgeGrass);
+                            jlbs[y1][x1].setIcon(imge1pS);
+                            jlbsCode[y1][x1]=4;
                             break;
                         }
                     case 65: //A
-                        if(x2==0||jlbsCode[y2][x2-1]!=0) {
-                            if(jlbsCode[y2][x2]!=5) {
-                                jlbs[y2][x2].setIcon(imge1pA);
+                        if(x1==0||jlbsCode[y1][x1-1]!=0) {
+                            if(jlbsCode[y1][x1]!=6) {
+                                jlbs[y1][x1].setIcon(imge1pA);
                                 break;
                             }
                         }
-                        else if(jlbsCode[y2][x2]==5){
-                            x2--;
-                            jlbs[y2][x2].setIcon(imge1pA);
-                            jlbsCode[y2][x2]=4;
+                        else if(jlbsCode[y1][x1]==6){
+
+                            x1--;
+                            jlbs[y1][x1+1].setIcon(imgeBomb);
+                            jlbsCode[y1][x1+1]=5;
+                            jlbs[y1][x1].setIcon(imge1pA);
+                            jlbsCode[y1][x1]=4;
+
                             break;
                         }else {
-                            jlbsCode[y2][x2]=0;
-                            jlbs[y2][x2].setIcon(imgeGrass);
-                            x2--;
-                            jlbs[y2][x2].setIcon(imge1pA);
-                            jlbsCode[y2][x2]=4;
+                            x1--;
+                            jlbsCode[y1][x1+1]=0;
+                            jlbs[y1][x1+1].setIcon(imgeGrass);
+                            jlbs[y1][x1].setIcon(imge1pA);
+                            jlbsCode[y1][x1]=4;
                             break;
                         }
                     case 68: //D
-                        if(x2==7||jlbsCode[y2][x2+1]!=0){
-                            if(jlbsCode[y2][x2]!=5) {
-                                jlbs[y2][x2].setIcon(imge1pD);
+                        if(x1==7||jlbsCode[y1][x1+1]!=0){
+                            if(jlbsCode[y1][x1]!=6) {
+                                jlbs[y1][x1].setIcon(imge1pD);
                                 break;
                             }
                         }
-                        else if(jlbsCode[y2][x2]==5){
-                            x2++;
-                            jlbs[y2][x2].setIcon(imge1pD);
-                            jlbsCode[y2][x2]=4;
+                        else if(jlbsCode[y1][x1]==6){
+
+                            x1++;
+                            jlbs[y1][x1-1].setIcon(imgeBomb);
+                            jlbsCode[y1][x1-1]=5;
+                            jlbs[y1][x1].setIcon(imge1pD);
+                            jlbsCode[y1][x1]=4;
+
                             break;
                         }else{
-                            jlbsCode[y2][x2]=0;
-                            jlbs[y2][x2].setIcon(imgeGrass);
-                            x2++;
-                            jlbs[y2][x2].setIcon(imge1pD);
-                            jlbsCode[y2][x2]=4;
+                            x1++;
+                            jlbsCode[y1][x1-1]=0;
+                            jlbs[y1][x1-1].setIcon(imgeGrass);
+                            jlbs[y1][x1].setIcon(imge1pD);
+                            jlbsCode[y1][x1]=4;
                             break;
                         }
                     case 32: //SPACE
                         if(b == true){
-                            jlbs[y2][x2].setIcon(imgeBomb);
-                            jlbsCode[y2][x2]=5;
-                            yb=y2;
-                            xb=x2;
+                            jlbs[y1][x1].setIcon(imge1pSBomb);
+                            jlbsCode[y1][x1]=6;
+                            oyb=y1;
+                            oxb=x1;
                             b=false;
-                            BombTime.start();
+                            BombTime1P.start();
                             break;
                         }else{
                             break;
                         }
+                    case 96: //0
+                        if(c == true){
+                            jlbs[y2][x2].setIcon(imge2pSBomb); //要畫圖 imge2pSBomb
+                            jlbsCode[y2][x2]=6;
+                            tyb=y2;
+                            txb=x2;
+                            c=false;
+                            BombTime2P.start();
+                        }
+
 
                 }
             }
         }) ;
 
-        BombTime = new Timer(500, new ActionListener() {
+        BombTime1P = new Timer(150, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                bt++;
-                System.out.println(bt);
-                if(bt>2){
-                    jlbs[yb][xb].setIcon(imgeFire);
-                    if(yb<7){ //往下炸
-                        if(jlbsCode[yb+1][xb]==0||jlbsCode[yb+1][xb]>1) {
-                            jlbs[yb + 1][xb].setIcon(imgeFireS);
+                onePbt++;
+
+                if(onePbt>6){
+                    jlbs[oyb][oxb].setIcon(imgeFire);
+                    if(oyb<7){ //往下炸
+                        if(jlbsCode[oyb+1][oxb]==0||jlbsCode[oyb+1][oxb]>1) {
+                            jlbs[oyb + 1][oxb].setIcon(imgeFireS);
                         }
                     }
-                    if(yb>0){ //往上炸
-                        if(jlbsCode[yb-1][xb]==0||jlbsCode[yb-1][xb]>1) {
-                            jlbs[yb - 1][xb].setIcon(imgeFireW);
+                    if(oyb>0){ //往上炸
+                        if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>1) {
+                            jlbs[oyb - 1][oxb].setIcon(imgeFireW);
                         }
                     }
-                    if(xb>0){ //往左炸
-                        if(jlbsCode[yb][xb-1]==0||jlbsCode[yb][xb-1]>1) {
-                            jlbs[yb][xb-1].setIcon(imgeFireA);
+                    if(oxb>0){ //往左炸
+                        if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>1) {
+                            jlbs[oyb][oxb-1].setIcon(imgeFireA);
                         }
                     }
-                    if(xb<7){ //往右炸
-                        if(jlbsCode[yb][xb+1]==0||jlbsCode[yb][xb+1]>1) {
-                            jlbs[yb][xb+1].setIcon(imgeFireD);
+                    if(oxb<7){ //往右炸
+                        if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>1) {
+                            jlbs[oyb][oxb+1].setIcon(imgeFireD);
                         }
                     }
                 }
-                if(bt>3){
+                if(onePbt>7){
                     //設定編碼 回復草地
-                    jlbsCode[yb][xb]=0;
-                    jlbs[yb][xb].setIcon(imgeGrass);
-                    if(yb<7){//往下炸
-                        if(jlbsCode[yb+1][xb]==0||jlbsCode[yb+1][xb]>1) {
-                            jlbs[yb + 1][xb].setIcon(imgeGrass);
-                            jlbsCode[yb + 1][xb] = 0;
+                    jlbsCode[oyb][oxb]=0;
+                    jlbs[oyb][oxb].setIcon(imgeGrass);
+                    if(oyb<7){//往下炸
+                        if(jlbsCode[oyb+1][oxb]==0||jlbsCode[oyb+1][oxb]>1) {
+                            jlbs[oyb + 1][oxb].setIcon(imgeGrass);
+                            jlbsCode[oyb + 1][oxb] = 0;
                         }
                     }
-                    if(yb>0){//往上炸
-                        if(jlbsCode[yb-1][xb]==0||jlbsCode[yb-1][xb]>1) {
-                            jlbs[yb - 1][xb].setIcon(imgeGrass);
-                            jlbsCode[yb-1][xb] = 0;
+                    if(oyb>0){//往上炸
+                        if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>1) {
+                            jlbs[oyb - 1][oxb].setIcon(imgeGrass);
+                            jlbsCode[oyb-1][oxb] = 0;
                         }
                     }
-                    if(xb>0){//往左炸
-                        if(jlbsCode[yb][xb-1]==0||jlbsCode[yb][xb-1]>1) {
-                            jlbs[yb][xb-1].setIcon(imgeGrass);
-                            jlbsCode[yb][xb-1] = 0;
+                    if(oxb>0){//往左炸
+                        if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>1) {
+                            jlbs[oyb][oxb-1].setIcon(imgeGrass);
+                            jlbsCode[oyb][oxb-1] = 0;
                         }
                     }
-                    if(xb<7){//往右炸
-                        if(jlbsCode[yb][xb+1]==0||jlbsCode[yb][xb+1]>1) {
-                            jlbs[yb][xb+1].setIcon(imgeGrass);
-                            jlbsCode[yb][xb+1] = 0;
+                    if(oxb<7){//往右炸
+                        if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>1) {
+                            jlbs[oyb][oxb+1].setIcon(imgeGrass);
+                            jlbsCode[oyb][oxb+1] = 0;
                         }
                     }
                     b=true;
-                    BombTime.stop();
-                    bt=0;
+                    BombTime1P.stop();
+                    onePbt=0;
 
                 }
             }
         });
+
+        BombTime2P = new Timer(150, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                twoPbt++;
+
+                if(twoPbt>6){
+                    jlbs[tyb][txb].setIcon(imgeFire);
+                    if(tyb<7){ //往下炸
+                        if(jlbsCode[tyb+1][txb]==0||jlbsCode[tyb+1][txb]>1) {
+                            jlbs[tyb + 1][txb].setIcon(imgeFireS);
+                        }
+                    }
+                    if(tyb>0){ //往上炸
+                        if(jlbsCode[tyb-1][txb]==0||jlbsCode[tyb-1][txb]>1) {
+                            jlbs[tyb - 1][txb].setIcon(imgeFireW);
+                        }
+                    }
+                    if(txb>0){ //往左炸
+                        if(jlbsCode[tyb][txb-1]==0||jlbsCode[tyb][txb-1]>1) {
+                            jlbs[tyb][txb-1].setIcon(imgeFireA);
+                        }
+                    }
+                    if(txb<7){ //往右炸
+                        if(jlbsCode[tyb][txb+1]==0||jlbsCode[tyb][txb+1]>1) {
+                            jlbs[tyb][txb+1].setIcon(imgeFireD);
+                        }
+                    }
+                }
+                if(twoPbt>7){
+                    //設定編碼 回復草地
+                    jlbsCode[tyb][txb]=0;
+                    jlbs[tyb][txb].setIcon(imgeGrass);
+                    if(tyb<7){//往下炸
+                        if(jlbsCode[tyb+1][txb]==0||jlbsCode[tyb+1][txb]>1) {
+                            jlbs[tyb + 1][txb].setIcon(imgeGrass);
+                            jlbsCode[tyb + 1][txb] = 0;
+                        }
+                    }
+                    if(tyb>0){//往上炸
+                        if(jlbsCode[tyb-1][txb]==0||jlbsCode[tyb-1][txb]>1) {
+                            jlbs[tyb - 1][txb].setIcon(imgeGrass);
+                            jlbsCode[tyb-1][txb] = 0;
+                        }
+                    }
+                    if(txb>0){//往左炸
+                        if(jlbsCode[tyb][txb-1]==0||jlbsCode[tyb][txb-1]>1) {
+                            jlbs[tyb][txb-1].setIcon(imgeGrass);
+                            jlbsCode[tyb][txb-1] = 0;
+                        }
+                    }
+                    if(txb<7){//往右炸
+                        if(jlbsCode[tyb][txb+1]==0||jlbsCode[tyb][txb+1]>1) {
+                            jlbs[tyb][txb+1].setIcon(imgeGrass);
+                            jlbsCode[tyb][txb+1] = 0;
+                        }
+                    }
+                    c=true;
+                    BombTime2P.stop();
+                    twoPbt=0;
+
+                }
+            }
+        });
+
+
+
 
     }
 }
