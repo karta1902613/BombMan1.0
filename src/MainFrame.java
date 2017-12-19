@@ -75,6 +75,7 @@ public class MainFrame extends JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 jlbs[i][j]= new JLabel();
+
                 cp.add(jlbs[i][j]);
             }
         }
@@ -85,7 +86,9 @@ public class MainFrame extends JFrame {
 
         jmGame.add(jmiNG);
         jmAbout.add(jmiHelp);
-        
+
+
+
 
         this.addKeyListener( new KeyAdapter(){
             public void keyPressed(KeyEvent e)
