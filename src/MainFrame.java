@@ -75,48 +75,17 @@ public class MainFrame extends JFrame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 jlbs[i][j]= new JLabel();
-                jlbs[i][j].setIcon(imgeBrick);
-                jlbsCode[i][j]=2;
                 cp.add(jlbs[i][j]);
             }
         }
+        restart();
         this.setJMenuBar(jmb);
         jmb.add(jmGame);
         jmb.add(jmAbout);
 
         jmGame.add(jmiNG);
         jmAbout.add(jmiHelp);
-        jlbs[0][1].setIcon(imgeGrass); jlbsCode[0][1]=0;
-        jlbs[1][0].setIcon(imgeGrass); jlbsCode[1][0]=0;
-        jlbs[7][6].setIcon(imgeGrass); jlbsCode[7][6]=0;
-        jlbs[6][7].setIcon(imgeGrass); jlbsCode[6][7]=0;
-
-        jlbs[1][1].setIcon(imgeStone2); jlbsCode[1][1]=1;
-        jlbs[1][2].setIcon(imgeStone2); jlbsCode[1][2]=1;
-        jlbs[2][1].setIcon(imgeStone2); jlbsCode[2][1]=1;
-        jlbs[2][2].setIcon(imgeStone2); jlbsCode[2][2]=1;
-        jlbs[5][5].setIcon(imgeStone2); jlbsCode[5][5]=1;
-        jlbs[5][6].setIcon(imgeStone2); jlbsCode[5][6]=1;
-        jlbs[6][5].setIcon(imgeStone2); jlbsCode[6][5]=1;
-        jlbs[6][6].setIcon(imgeStone2); jlbsCode[6][6]=1;
-        jlbs[1][4].setIcon(imgeStone2); jlbsCode[1][4]=1;
-        jlbs[1][6].setIcon(imgeStone2); jlbsCode[1][6]=1;
-        jlbs[3][4].setIcon(imgeStone2); jlbsCode[3][4]=1;
-        jlbs[3][6].setIcon(imgeStone2); jlbsCode[3][6]=1;
-        jlbs[4][1].setIcon(imgeStone2); jlbsCode[4][1]=1;
-        jlbs[4][3].setIcon(imgeStone2); jlbsCode[4][3]=1;
-        jlbs[6][1].setIcon(imgeStone2); jlbsCode[6][1]=1;
-        jlbs[6][3].setIcon(imgeStone2); jlbsCode[6][3]=1;
-
-
-
-        jlbsCode[0][0]=3;
-        jlbsCode[7][7]=4;
-
-        jlbs[x1][y1].setIcon(imge1pS);
-        jlbs[x2][y2].setIcon(imge2pS);
-
-
+        
 
         this.addKeyListener( new KeyAdapter(){
             public void keyPressed(KeyEvent e)
