@@ -324,7 +324,6 @@ public class MainFrame extends JFrame {
                         }
                     case 32: //SPACE
                         if(b == true){
-                            firetmp=onefireQua;
                             jlbs[y1][x1].setIcon(imge1pSBomb);
                             jlbsCode[y1][x1]=6;
                             oyb=y1;
@@ -353,38 +352,67 @@ public class MainFrame extends JFrame {
         BombTime1P = new Timer(150, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+
                 onePbt++;
                 if(onePbt>6){
                     jlbs[oyb][oxb].setIcon(imgeFire);
 
-                    for(int i=1;i<firetmp+1;i++){
-                       // System.out.println(i);
-                    if(oyb+i<=7) { //往下炸
-                        if (jlbsCode[oyb + i][oxb] == 0 || jlbsCode[oyb + i][oxb] > 2) {
-                            jlbs[oyb + i][oxb].setIcon(imgefireWS);
-                        } else if (jlbsCode[oyb + i][oxb] == 2) {
-                            jlbs[oyb + i][oxb].setIcon(imgefireWS);
-                            break;
-                        }else if(jlbsCode[oyb +i][oxb]==1){
-                            break;
-                        }
-                        }
-                    }
-                    if(oyb>0){ //往上炸
-                        if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>1) {
-                            jlbs[oyb - 1][oxb].setIcon(imgeFireW);
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb+i<=7) { //往下炸
+                             if (jlbsCode[oyb + i][oxb] == 0 || jlbsCode[oyb + i][oxb] > 2) {
+                                 jlbs[oyb + i][oxb].setIcon(imgefireWS);
+                             } else if (jlbsCode[oyb + i][oxb] == 2) {
+                                 jlbs[oyb + i][oxb].setIcon(imgefireWS);
+                                 break;
+                             }else if(jlbsCode[oyb +i][oxb]==1){
+                                 break;
+                             }
                         }
                     }
-                    if(oxb>0){ //往左炸
-                        if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>1) {
-                            jlbs[oyb][oxb-1].setIcon(imgeFireA);
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb-i>=0) { //往上炸
+                            if (jlbsCode[oyb - i][oxb] == 0 || jlbsCode[oyb - i][oxb] > 2) {
+                                jlbs[oyb - i][oxb].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb - i][oxb] == 2) {
+                                jlbs[oyb - i][oxb].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb -i][oxb]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb-i>=0) { //往左炸
+                            if (jlbsCode[oyb][oxb-i] == 0 || jlbsCode[oyb][oxb-i] > 2) {
+                                jlbs[oyb][oxb-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb][oxb-i] == 2) {
+                                jlbs[oyb][oxb-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb][oxb-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb+i<=7) { //往右炸
+                            if (jlbsCode[oyb][oxb+i] == 0 || jlbsCode[oyb][oxb+i] > 2) {
+                                jlbs[oyb][oxb+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb][oxb+i] == 2) {
+                                jlbs[oyb][oxb+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb][oxb+i]==1){
+                                break;
+                            }
                         }
                     }
                     if(oxb<7){ //往右炸
                         if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>1) {
-                            jlbs[oyb][oxb+1].setIcon(imgeFireD);
+                            jlbs[oyb][oxb+1].setIcon(imgefireAD);
                         }
                     }
+
                     if(oyb<7) {
                         if (jlbsCode[oyb + 1][oxb] == 3) { //下
                             oPdie();
@@ -417,68 +445,82 @@ public class MainFrame extends JFrame {
                         oPdie();
                     }
                 }
-
                 if(onePbt>7){
                     //設定編碼 回復草地
                     jlbsCode[oyb][oxb]=0;
                     jlbs[oyb][oxb].setIcon(imgeGrass);
 
-                    for(int i=1;i<firetmp+1;i++){
+                    for(int i=1;i<onefireQua+1;i++){
 
                         if(oyb+i<=7) { //往下炸
                             if (jlbsCode[oyb + i][oxb] == 0 || jlbsCode[oyb + i][oxb] > 2) {
                                 jlbs[oyb + i][oxb].setIcon(imgeGrass);
                                 jlbsCode[oyb+i][oxb] = 0;
                             } else if (jlbsCode[oyb + i][oxb] == 2) {
-                                oyb++;
+                                firetmp=i;
+                                oyb+=i;
                                 rewardOne();
-                                oyb--;
-                                jlbs[oyb + i][oxb].setIcon(imgeGrass);
-                                jlbsCode[oyb+i][oxb] = 0;
+                                oyb-=i;
                                 break;
                             } else if(jlbsCode[oyb+i][oxb]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
 
+                        if(oyb-i>=0) { //往上炸
+                            if (jlbsCode[oyb - i][oxb] == 0 || jlbsCode[oyb - i][oxb] > 2) {
+                                jlbs[oyb - i][oxb].setIcon(imgeGrass);
+                                jlbsCode[oyb-i][oxb] = 0;
+                            } else if (jlbsCode[oyb - i][oxb] == 2) {
+                                firetmp=i;
+                                oyb-=i;
+                                rewardOne();
+                                oyb+=i;
+                                break;
+                            } else if(jlbsCode[oyb-i][oxb]==1){
                                 break;
                             }
                         }
                     }
 
-                //   if(oyb<7){//往下炸
-                //       if(jlbsCode[oyb+1][oxb]==2){       }else if(jlbsCode[oyb+1][oxb]==0||jlbsCode[oyb+1][oxb]>2) {
-                //           jlbs[oyb + 1][oxb].setIcon(imgeGrass);
-                //           jlbsCode[oyb+1][oxb] = 0;
-                //       }
-                //   }
-                    if(oyb>0){//往上炸
-                        if(jlbsCode[oyb-1][oxb]==2){
-                            oyb--;
-                            rewardOne();
-                            oyb++;
-                        }else if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>2) {
-                            jlbs[oyb - 1][oxb].setIcon(imgeGrass);
-                            jlbsCode[oyb-1][oxb] = 0;
+                    for(int i=1;i<onefireQua+1;i++){
+
+                        if(oxb-i>=0) { //往左炸
+                            if (jlbsCode[oyb][oxb-i] == 0 || jlbsCode[oyb][oxb-i] > 2) {
+                                jlbs[oyb][oxb-i].setIcon(imgeGrass);
+                                jlbsCode[oyb][oxb-i] = 0;
+                            } else if (jlbsCode[oyb][oxb-i] == 2) {
+                                firetmp=i;
+                                oxb-=i;
+                                rewardOne();
+                                oxb+=i;
+                                break;
+                            } else if(jlbsCode[oyb][oxb-i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb>0){//往左炸
-                        if(jlbsCode[oyb][oxb-1]==2){
-                            oxb--;
-                            rewardOne();
-                            oxb++;
-                        }else if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>2) {
-                            jlbs[oyb][oxb-1].setIcon(imgeGrass);
-                            jlbsCode[oyb][oxb-1] = 0;
+
+                    for(int i=1;i<onefireQua+1;i++){
+
+                        if(oxb+i<=7) { //往右炸
+                            if (jlbsCode[oyb][oxb+i] == 0 || jlbsCode[oyb][oxb+i] > 2) {
+                                jlbs[oyb][oxb+i].setIcon(imgeGrass);
+                                jlbsCode[oyb][oxb+i] = 0;
+                            } else if (jlbsCode[oyb][oxb+i] == 2) {
+                                firetmp=i;
+                                oxb+=i;
+                                rewardOne();
+                                oxb-=i;
+                                break;
+                            } else if(jlbsCode[oyb][oxb+i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb<7){//往右炸
-                        if(jlbsCode[oyb][oxb+1]==2){
-                            oxb++;
-                            rewardOne();
-                            oxb--;
-                        }else if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>2) {
-                            jlbs[oyb][oxb+1].setIcon(imgeGrass);
-                            jlbsCode[oyb][oxb+1] = 0;
-                        }
-                    }
+
                     b=true;
                     BombTime1P.stop();
                     onePbt=0;
@@ -608,11 +650,11 @@ public class MainFrame extends JFrame {
     public void countOne(){
         if(onebombQua<5&&jlbsCode[y1][x1]==-2){
             onebombQua++;
-           // System.out.println("1P炸彈"+onebombQua);
+            System.out.println("1P炸彈"+onebombQua);
         }
         if(onefireQua<5&&jlbsCode[y1][x1]==-1){
             onefireQua++;
-          //  System.out.println("1P火力"+onefireQua);
+            System.out.println("1P火力"+onefireQua);
         }
     }
     public void countTwo(){
@@ -630,7 +672,7 @@ public class MainFrame extends JFrame {
 
         reward=rnd.nextInt(10)+1;
         //System.out.println(reward);
-        if(reward<11){
+        if(reward<4){
             jlbs[oyb][oxb].setIcon(imgefirePlus);
             jlbsCode[oyb][oxb]=-1;
         }else if(reward>5) {
