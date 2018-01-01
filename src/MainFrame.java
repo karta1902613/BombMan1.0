@@ -13,8 +13,10 @@ public class MainFrame extends JFrame {
     //∥       2 = 可破壞物件                            ∥
     //∥       3 = 1p                                    ∥
     //∥       4 = 2p                                    ∥
-    //∥       5 = 炸彈                                 ∥
+    //∥       5 = 炸彈                                  ∥
     //∥       6 = 有炸彈&&有人                          ∥
+    //∥      -1 = 增強火力道具                          ∥
+    //∥      -2 = 增加炸彈道具                          ∥
     // ==================================================
     //物件圖片
     private ImageIcon imgeGrass = new ImageIcon("grass.jpg");
@@ -52,26 +54,33 @@ public class MainFrame extends JFrame {
     private JMenuItem jmiNG = new JMenuItem("New Game");
     private JMenuItem jmiHelp = new JMenuItem("Help");
 
-    private Timer BombTime1P;
-    private Timer BombTime2P;
-    private int onePbt =0;
-    private int twoPbt =0;
-    private int oxb =0;
-    private int oyb =0;
-    private int txb =0;
-    private int tyb =0;
+    private Timer BombTime1PT1;
+    private Timer BombTime1PT2;
+    private Timer BombTime1PT3;
+    private Timer BombTime1PT4;
+    private Timer BombTime1PT5;
+    private Timer BombTime2PT1;
+    private int onePbt1 ,onePbt2,onePbt3,onePbt4,onePbt5;
+    private int twoPbt1 ,twoPbt2,twoPbt3;
+    private int oxb1 , oxb2 , oxb3, oxb4 ,oxb5;
+    private int oyb1 , oyb2 , oyb3, oyb4 ,oyb5;
+    private int txb1 , txb2 , txb3;
+    private int tyb1 , tyb2 , tyb3;
     private int reward;
     private int onebombQua = 1;
     private int onefireQua = 1;
     private int twobombQua = 1;
     private int twofireQua = 1;
-    private int firetmp;
+    private int rTmpx;
+    private int rTmpy;
+    private int countBomb=0;
+    private int queueBomb=1;
 
     private boolean b = true;
     private boolean c = true;
 
 
-    int x1 = 0, y1 = 0 ,x2 = 7, y2 = 7;
+   private int x1 = 0, y1 = 0 ,x2 = 7, y2 = 7;
 
     public MainFrame() {
         init();
@@ -323,26 +332,68 @@ public class MainFrame extends JFrame {
                             break;
                         }
                     case 32: //SPACE
-                        if(b == true){
-                            firetmp=onefireQua;
-                            jlbs[y1][x1].setIcon(imge1pSBomb);
-                            jlbsCode[y1][x1]=6;
-                            oyb=y1;
-                            oxb=x1;
-                            b=false;
-                            BombTime1P.start();
+                            if(countBomb<onebombQua&&jlbsCode[y1][x1]!=6){
+                                switch (queueBomb){
+                                    case 1:
+                                        countBomb++;
+                                        queueBomb=2;
+                                        jlbs[y1][x1].setIcon(imge1pSBomb);
+                                        jlbsCode[y1][x1]=6;
+                                        oyb1=y1;
+                                        oxb1=x1;
+                                        BombTime1PT1.start();
+                                        break;
+                                    case 2:
+                                        countBomb++;
+                                        queueBomb=3;
+                                        jlbs[y1][x1].setIcon(imge1pSBomb);
+                                        jlbsCode[y1][x1]=6;
+                                        oyb2=y1;
+                                        oxb2=x1;
+                                        BombTime1PT2.start();
+                                        break;
+                                    case 3:
+                                        countBomb++;
+                                        queueBomb=4;
+                                        jlbs[y1][x1].setIcon(imge1pSBomb);
+                                        jlbsCode[y1][x1]=6;
+                                        oyb3=y1;
+                                        oxb3=x1;
+                                        BombTime1PT3.start();
+                                        break;
+                                    case 4:
+                                        countBomb++;
+                                        queueBomb=5;
+                                        jlbs[y1][x1].setIcon(imge1pSBomb);
+                                        jlbsCode[y1][x1]=6;
+                                        oyb4=y1;
+                                        oxb4=x1;
+                                        BombTime1PT4.start();
+                                        break;
+                                    case 5:
+                                        countBomb++;
+                                        queueBomb=1;
+                                        jlbs[y1][x1].setIcon(imge1pSBomb);
+                                        jlbsCode[y1][x1]=6;
+                                        oyb5=y1;
+                                        oxb5=x1;
+                                        BombTime1PT5.start();
+                                        break;
+                                }
+                            }else{
+                                break;
+                            }
                             break;
-                        }else{
-                            break;
-                        }
+
+
                     case 96: //0
                         if(c == true){
                             jlbs[y2][x2].setIcon(imge2pSBomb);
                             jlbsCode[y2][x2]=6;
-                            tyb=y2;
-                            txb=x2;
+                            tyb1=y2;
+                            txb1=x2;
                             c=false;
-                            BombTime2P.start();
+                            BombTime2PT1.start();
                         }
 
 
@@ -350,256 +401,1247 @@ public class MainFrame extends JFrame {
             }
         }) ;
 
-        BombTime1P = new Timer(150, new ActionListener() {
+        BombTime1PT1 = new Timer(150, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onePbt++;
-                if(onePbt>6){
-                    jlbs[oyb][oxb].setIcon(imgeFire);
 
-                    for(int i=1;i<firetmp+1;i++){
-                       // System.out.println(i);
-                    if(oyb+i<=7) { //往下炸
-                        if (jlbsCode[oyb + i][oxb] == 0 || jlbsCode[oyb + i][oxb] > 2) {
-                            jlbs[oyb + i][oxb].setIcon(imgefireWS);
-                        } else if (jlbsCode[oyb + i][oxb] == 2) {
-                            jlbs[oyb + i][oxb].setIcon(imgefireWS);
-                            break;
-                        }else if(jlbsCode[oyb +i][oxb]==1){
-                            break;
-                        }
-                        }
-                    }
-                    if(oyb>0){ //往上炸
-                        if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>1) {
-                            jlbs[oyb - 1][oxb].setIcon(imgeFireW);
-                        }
-                    }
-                    if(oxb>0){ //往左炸
-                        if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>1) {
-                            jlbs[oyb][oxb-1].setIcon(imgeFireA);
+
+                onePbt1++;
+                if(onePbt1>6){
+                    jlbs[oyb1][oxb1].setIcon(imgeFire);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1+i<=7) { //往下炸
+                            if (jlbsCode[oyb1 + i][oxb1] == 0 || jlbsCode[oyb1 + i][oxb1] > 2||jlbsCode[oyb1+i][oxb1]<0) {
+                                jlbs[oyb1 + i][oxb1].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb1 + i][oxb1] == 2) {
+                                jlbs[oyb1 + i][oxb1].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb1 +i][oxb1]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb<7){ //往右炸
-                        if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>1) {
-                            jlbs[oyb][oxb+1].setIcon(imgeFireD);
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1-i>=0) { //往上炸
+                            if (jlbsCode[oyb1 - i][oxb1] == 0 || jlbsCode[oyb1 - i][oxb1] > 2||jlbsCode[oyb1-i][oxb1]<0) {
+                                jlbs[oyb1 - i][oxb1].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb1 - i][oxb1] == 2) {
+                                jlbs[oyb1 - i][oxb1].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb1 -i][oxb1]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oyb<7) {
-                        if (jlbsCode[oyb + 1][oxb] == 3) { //下
-                            oPdie();
-                        } else if (jlbsCode[oyb + 1][oxb] == 4) {
-                            tPdie();
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1-i>=0) { //往左炸
+                            if (jlbsCode[oyb1][oxb1-i] == 0 || jlbsCode[oyb1][oxb1-i] > 2||jlbsCode[oyb1][oxb1-i]<0) {
+                                jlbs[oyb1][oxb1-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb1][oxb1-i] == 2) {
+                                jlbs[oyb1][oxb1-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb1][oxb1-i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oyb>0) {
-                        if (jlbsCode[oyb - 1][oxb] == 3) { //上
-                            oPdie();
-                        } else if (jlbsCode[oyb - 1][oxb] == 4) {
-                            tPdie();
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1+i<=7) { //往右炸
+                            if (jlbsCode[oyb1][oxb1+i] == 0 || jlbsCode[oyb1][oxb1+i] > 2||jlbsCode[oyb1][oxb1+i]<0) {
+                                jlbs[oyb1][oxb1+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb1][oxb1+i] == 2) {
+                                jlbs[oyb1][oxb1+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb1][oxb1+i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb>0) {
-                        if (jlbsCode[oyb][oxb - 1] == 3) { //左
-                            oPdie();
-                        } else if (jlbsCode[oyb][oxb - 1] == 4) {
-                            tPdie();
+
+                    //判定腳色死亡
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1+i<=7) { //往下炸
+                            if (jlbsCode[oyb1 + i][oxb1] == 0 || jlbsCode[oyb1 + i][oxb1] > 2) {
+                                if (jlbsCode[oyb1 + i][oxb1] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb1 + i][oxb1] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb1 + i][oxb1] == 2||jlbsCode[oyb1 +i][oxb1]==1) {
+                                break;
+
+                            }
                         }
                     }
-                    if(oxb<7) {
-                        if (jlbsCode[oyb][oxb + 1] == 3) { //右
-                            oPdie();
-                        } else if (jlbsCode[oyb][oxb + 1] == 4) {
-                            tPdie();
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1-i>=0) { //往上炸
+                            if (jlbsCode[oyb1 - i][oxb1] == 0 || jlbsCode[oyb1 - i][oxb1] > 2) {
+                                if (jlbsCode[oyb1 - i][oxb1] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb1 - i][oxb1] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb1 - i][oxb1] == 2||jlbsCode[oyb1 - i][oxb1]==1) {
+                                break;
+
+                            }
                         }
                     }
-                    if (jlbsCode[oyb][oxb] == 6) { //中
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1-i>=0) { //往左炸
+                            if (jlbsCode[oyb1][oxb1-i] == 0 || jlbsCode[oyb1][oxb1-i] > 2) {
+                                if (jlbsCode[oyb1][oxb1-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb1][oxb1-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb1][oxb1-i] == 2||jlbsCode[oyb1][oxb1-i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1+i<=7) { //往右炸
+                            if (jlbsCode[oyb1][oxb1+i] == 0 || jlbsCode[oyb1][oxb1+i] > 2) {
+                                if (jlbsCode[oyb1][oxb1+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb1][oxb1+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb1][oxb1+i] == 2||jlbsCode[oyb1][oxb1+i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    if (jlbsCode[oyb1][oxb1] == 6) { //中
                         oPdie();
                     }
                 }
-
-                if(onePbt>7){
+                if(onePbt1>7){
                     //設定編碼 回復草地
-                    jlbsCode[oyb][oxb]=0;
-                    jlbs[oyb][oxb].setIcon(imgeGrass);
+                    jlbsCode[oyb1][oxb1]=0;
+                    jlbs[oyb1][oxb1].setIcon(imgeGrass);
 
-                    for(int i=1;i<firetmp+1;i++){
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1+i<=7) { //往下炸
+                            if (jlbsCode[oyb1 + i][oxb1] == 0 || jlbsCode[oyb1 + i][oxb1] > 2||jlbsCode[oyb1+i][oxb1]<0) {
+                                jlbs[oyb1 + i][oxb1].setIcon(imgeGrass);
+                                jlbsCode[oyb1+i][oxb1] = 0;
+                            } else if (jlbsCode[oyb1 + i][oxb1] == 2) {
 
-                        if(oyb+i<=7) { //往下炸
-                            if (jlbsCode[oyb + i][oxb] == 0 || jlbsCode[oyb + i][oxb] > 2) {
-                                jlbs[oyb + i][oxb].setIcon(imgeGrass);
-                                jlbsCode[oyb+i][oxb] = 0;
-                            } else if (jlbsCode[oyb + i][oxb] == 2) {
-                                oyb++;
+                                oyb1+=i;
+                                rTmpx=oxb1;
+                                rTmpy=oyb1;
                                 rewardOne();
-                                oyb--;
-                                jlbs[oyb + i][oxb].setIcon(imgeGrass);
-                                jlbsCode[oyb+i][oxb] = 0;
+                                oyb1-=i;
                                 break;
-                            } else if(jlbsCode[oyb+i][oxb]==1){
-
+                            } else if(jlbsCode[oyb1+i][oxb1]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb1-i>=0) { //往上炸
+                            if (jlbsCode[oyb1 - i][oxb1] == 0 || jlbsCode[oyb1 - i][oxb1] > 2||jlbsCode[oyb1-i][oxb1]<0) {
+                                jlbs[oyb1 - i][oxb1].setIcon(imgeGrass);
+                                jlbsCode[oyb1-i][oxb1] = 0;
+                            } else if (jlbsCode[oyb1 - i][oxb1] == 2) {
+                                oyb1-=i;
+                                rTmpx=oxb1;
+                                rTmpy=oyb1;
+                                rewardOne();
+                                oyb1+=i;
+                                break;
+                            } else if(jlbsCode[oyb1-i][oxb1]==1){
                                 break;
                             }
                         }
                     }
 
-                //   if(oyb<7){//往下炸
-                //       if(jlbsCode[oyb+1][oxb]==2){       }else if(jlbsCode[oyb+1][oxb]==0||jlbsCode[oyb+1][oxb]>2) {
-                //           jlbs[oyb + 1][oxb].setIcon(imgeGrass);
-                //           jlbsCode[oyb+1][oxb] = 0;
-                //       }
-                //   }
-                    if(oyb>0){//往上炸
-                        if(jlbsCode[oyb-1][oxb]==2){
-                            oyb--;
-                            rewardOne();
-                            oyb++;
-                        }else if(jlbsCode[oyb-1][oxb]==0||jlbsCode[oyb-1][oxb]>2) {
-                            jlbs[oyb - 1][oxb].setIcon(imgeGrass);
-                            jlbsCode[oyb-1][oxb] = 0;
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1-i>=0) { //往左炸
+                            if (jlbsCode[oyb1][oxb1-i] == 0 || jlbsCode[oyb1][oxb1-i] > 2||jlbsCode[oyb1][oxb1-i]<0) {
+                                jlbs[oyb1][oxb1-i].setIcon(imgeGrass);
+                                jlbsCode[oyb1][oxb1-i] = 0;
+                            } else if (jlbsCode[oyb1][oxb1-i] == 2) {
+                                oxb1-=i;
+                                rTmpx=oxb1;
+                                rTmpy=oyb1;
+                                rewardOne();
+                                oxb1+=i;
+                                break;
+                            } else if(jlbsCode[oyb1][oxb1-i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb>0){//往左炸
-                        if(jlbsCode[oyb][oxb-1]==2){
-                            oxb--;
-                            rewardOne();
-                            oxb++;
-                        }else if(jlbsCode[oyb][oxb-1]==0||jlbsCode[oyb][oxb-1]>2) {
-                            jlbs[oyb][oxb-1].setIcon(imgeGrass);
-                            jlbsCode[oyb][oxb-1] = 0;
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb1+i<=7) { //往右炸
+                            if (jlbsCode[oyb1][oxb1+i] == 0 || jlbsCode[oyb1][oxb1+i] > 2||jlbsCode[oyb1][oxb1+i]<0) {
+                                jlbs[oyb1][oxb1+i].setIcon(imgeGrass);
+                                jlbsCode[oyb1][oxb1+i] = 0;
+                            } else if (jlbsCode[oyb1][oxb1+i] == 2) {
+                                oxb1+=i;
+                                rTmpx=oxb1;
+                                rTmpy=oyb1;
+                                rewardOne();
+                                oxb1-=i;
+                                break;
+                            } else if(jlbsCode[oyb1][oxb1+i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(oxb<7){//往右炸
-                        if(jlbsCode[oyb][oxb+1]==2){
-                            oxb++;
-                            rewardOne();
-                            oxb--;
-                        }else if(jlbsCode[oyb][oxb+1]==0||jlbsCode[oyb][oxb+1]>2) {
-                            jlbs[oyb][oxb+1].setIcon(imgeGrass);
-                            jlbsCode[oyb][oxb+1] = 0;
-                        }
-                    }
+
                     b=true;
-                    BombTime1P.stop();
-                    onePbt=0;
+
+                    BombTime1PT1.stop();
+                    onePbt1=0;
+                    countBomb--;
 
                 }
             }
         });
-
-        BombTime2P = new Timer(150, new ActionListener() {
+        BombTime1PT2 = new Timer(150, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                twoPbt++;
 
-                if(twoPbt>6){
-                    jlbs[tyb][txb].setIcon(imgeFire);
-                    if(tyb<7){ //往下炸
-                            if(jlbsCode[tyb+1][txb]==0||jlbsCode[tyb+1][txb]>1) {
-                                jlbs[tyb + 1][txb].setIcon(imgeFireS);
+
+                onePbt2++;
+                if(onePbt2>6){
+                    jlbs[oyb2][oxb2].setIcon(imgeFire);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2+i<=7) { //往下炸
+                            if (jlbsCode[oyb2 + i][oxb2] == 0 || jlbsCode[oyb2 + i][oxb2] > 2||jlbsCode[oyb2+i][oxb2]<0) {
+                                jlbs[oyb2 + i][oxb2].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb2 + i][oxb2] == 2) {
+                                jlbs[oyb2 + i][oxb2].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb2 +i][oxb2]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2-i>=0) { //往上炸
+                            if (jlbsCode[oyb2 - i][oxb2] == 0 || jlbsCode[oyb2 - i][oxb2] > 2||jlbsCode[oyb2-i][oxb2]<0) {
+                                jlbs[oyb2 - i][oxb2].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb2 - i][oxb2] == 2) {
+                                jlbs[oyb2 - i][oxb2].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb2 -i][oxb2]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2-i>=0) { //往左炸
+                            if (jlbsCode[oyb2][oxb2-i] == 0 || jlbsCode[oyb2][oxb2-i] > 2||jlbsCode[oyb2][oxb2-i]<0) {
+                                jlbs[oyb2][oxb2-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb2][oxb2-i] == 2) {
+                                jlbs[oyb2][oxb2-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb2][oxb2-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2+i<=7) { //往右炸
+                            if (jlbsCode[oyb2][oxb2+i] == 0 || jlbsCode[oyb2][oxb2+i] > 2||jlbsCode[oyb2][oxb2+i]<0) {
+                                jlbs[oyb2][oxb2+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb2][oxb2+i] == 2) {
+                                jlbs[oyb2][oxb2+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb2][oxb2+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    //判定腳色死亡
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2+i<=7) { //往下炸
+                            if (jlbsCode[oyb2 + i][oxb2] == 0 || jlbsCode[oyb2 + i][oxb2] > 2) {
+                                if (jlbsCode[oyb2 + i][oxb2] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb2 + i][oxb2] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb2 + i][oxb2] == 2||jlbsCode[oyb2 +i][oxb2]==1) {
+                                break;
 
                             }
-                    }
-                    if(tyb>0){ //往上炸
-                        if(jlbsCode[tyb-1][txb]==0||jlbsCode[tyb-1][txb]>1) {
-                            jlbs[tyb - 1][txb].setIcon(imgeFireW);
                         }
                     }
-                    if(txb>0){ //往左炸
-                        if(jlbsCode[tyb][txb-1]==0||jlbsCode[tyb][txb-1]>1) {
-                            jlbs[tyb][txb-1].setIcon(imgeFireA);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2-i>=0) { //往上炸
+                            if (jlbsCode[oyb2 - i][oxb2] == 0 || jlbsCode[oyb2 - i][oxb2] > 2) {
+                                if (jlbsCode[oyb2 - i][oxb2] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb2 - i][oxb2] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb2 - i][oxb2] == 2||jlbsCode[oyb2 - i][oxb2]==1) {
+                                break;
+
+                            }
                         }
                     }
-                    if(txb<7){ //往右炸
-                        if(jlbsCode[tyb][txb+1]==0||jlbsCode[tyb][txb+1]>1) {
-                            jlbs[tyb][txb+1].setIcon(imgeFireD);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2-i>=0) { //往左炸
+                            if (jlbsCode[oyb2][oxb2-i] == 0 || jlbsCode[oyb2][oxb2-i] > 2) {
+                                if (jlbsCode[oyb2][oxb2-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb2][oxb2-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb2][oxb2-i] == 2||jlbsCode[oyb2][oxb2-i]==1) {
+                                break;
+
+                            }
                         }
                     }
-                    if(tyb<7) {
-                        if (jlbsCode[tyb + 1][txb] == 3) { //下
-                            oPdie();
-                        } else if (jlbsCode[tyb + 1][txb] == 4) {
-                            tPdie();
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2+i<=7) { //往右炸
+                            if (jlbsCode[oyb2][oxb2+i] == 0 || jlbsCode[oyb2][oxb2+i] > 2) {
+                                if (jlbsCode[oyb2][oxb2+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb2][oxb2+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb2][oxb2+i] == 2||jlbsCode[oyb2][oxb2+i]==1) {
+                                break;
+
+                            }
                         }
                     }
-                    if(tyb>0) {
-                        if (jlbsCode[tyb - 1][txb] == 3) { //上
-                            oPdie();
-                        } else if (jlbsCode[tyb - 1][txb] == 4) {
-                            tPdie();
-                        }
+                    if (jlbsCode[oyb2][oxb2] == 6) { //中
+                        oPdie();
                     }
-                    if(txb>0) {
-                        if (jlbsCode[tyb][txb - 1] == 3) { //左
-                            oPdie();
-                        } else if (jlbsCode[tyb][txb - 1] == 4) {
-                            tPdie();
-                        }
-                    }
-                    if(txb<7) {
-                        if (jlbsCode[tyb][txb + 1] == 3) { //右
-                            oPdie();
-                        } else if (jlbsCode[tyb][txb + 1] == 4) {
-                            tPdie();
-                        }
-                    }
-                        if (jlbsCode[tyb][txb] == 6) { //中
-                            tPdie();
-                        }
                 }
-
-
-                if(twoPbt>7){
+                if(onePbt2>7){
                     //設定編碼 回復草地
-                    jlbsCode[tyb][txb]=0;
-                    jlbs[tyb][txb].setIcon(imgeGrass);
-                    if(tyb<7){//往下炸
-                        if(jlbsCode[tyb+1][txb]==2){
-                            tyb++;
-                            rewardTwo();
-                            tyb--;
-                        }else if(jlbsCode[tyb+1][txb]==0||jlbsCode[tyb+1][txb]>2) {
-                            jlbs[tyb + 1][txb].setIcon(imgeGrass);
-                            jlbsCode[tyb + 1][txb] = 0;
+                    jlbsCode[oyb2][oxb2]=0;
+                    jlbs[oyb2][oxb2].setIcon(imgeGrass);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2+i<=7) { //往下炸
+                            if (jlbsCode[oyb2 + i][oxb2] == 0 || jlbsCode[oyb2 + i][oxb2] > 2||jlbsCode[oyb2+i][oxb2]<0) {
+                                jlbs[oyb2 + i][oxb2].setIcon(imgeGrass);
+                                jlbsCode[oyb2+i][oxb2] = 0;
+                            } else if (jlbsCode[oyb2 + i][oxb2] == 2) {
+
+                                oyb2+=i;
+                                rTmpx=oxb2;
+                                rTmpy=oyb2;
+                                rewardOne();
+                                oyb2-=i;
+                                break;
+                            } else if(jlbsCode[oyb2+i][oxb2]==1){
+                                break;
+                            }
                         }
                     }
-                    if(tyb>0){//往上炸
-                        if(jlbsCode[tyb-1][txb]==2){
-                            tyb--;
-                            rewardTwo();
-                            tyb++;
-                        }else if(jlbsCode[tyb-1][txb]==0||jlbsCode[tyb-1][txb]>2) {
-                            jlbs[tyb - 1][txb].setIcon(imgeGrass);
-                            jlbsCode[tyb-1][txb] = 0;
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb2-i>=0) { //往上炸
+                            if (jlbsCode[oyb2 - i][oxb2] == 0 || jlbsCode[oyb2 - i][oxb2] > 2||jlbsCode[oyb2-i][oxb2]<0) {
+                                jlbs[oyb2 - i][oxb2].setIcon(imgeGrass);
+                                jlbsCode[oyb2-i][oxb2] = 0;
+                            } else if (jlbsCode[oyb2 - i][oxb2] == 2) {
+                                oyb2-=i;
+                                rTmpx=oxb2;
+                                rTmpy=oyb2;
+                                rewardOne();
+                                oyb2+=i;
+                                break;
+                            } else if(jlbsCode[oyb2-i][oxb2]==1){
+                                break;
+                            }
                         }
                     }
-                    if(txb>0){//往左炸
-                        if(jlbsCode[tyb][txb-1]==2){
-                            txb--;
-                            rewardTwo();
-                            txb++;
-                        }else if(jlbsCode[tyb][txb-1]==0||jlbsCode[tyb][txb-1]>2) {
-                            jlbs[tyb][txb-1].setIcon(imgeGrass);
-                            jlbsCode[tyb][txb-1] = 0;
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2-i>=0) { //往左炸
+                            if (jlbsCode[oyb2][oxb2-i] == 0 || jlbsCode[oyb2][oxb2-i] > 2||jlbsCode[oyb2][oxb2-i]<0) {
+                                jlbs[oyb2][oxb2-i].setIcon(imgeGrass);
+                                jlbsCode[oyb2][oxb2-i] = 0;
+                            } else if (jlbsCode[oyb2][oxb2-i] == 2) {
+                                oxb2-=i;
+                                rTmpx=oxb2;
+                                rTmpy=oyb2;
+                                rewardOne();
+                                oxb2+=i;
+                                break;
+                            } else if(jlbsCode[oyb2][oxb2-i]==1){
+                                break;
+                            }
                         }
                     }
-                    if(txb<7){//往右炸
-                        if(jlbsCode[tyb][txb+1]==2){
-                            txb++;
-                            rewardTwo();
-                            txb--;
-                        }else if(jlbsCode[tyb][txb+1]==0||jlbsCode[tyb][txb+1]>2) {
-                               jlbs[tyb][txb+1].setIcon(imgeGrass);
-                            jlbsCode[tyb][txb+1] = 0;
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb2+i<=7) { //往右炸
+                            if (jlbsCode[oyb2][oxb2+i] == 0 || jlbsCode[oyb2][oxb2+i] > 2||jlbsCode[oyb2][oxb2+i]<0) {
+                                jlbs[oyb2][oxb2+i].setIcon(imgeGrass);
+                                jlbsCode[oyb2][oxb2+i] = 0;
+                            } else if (jlbsCode[oyb2][oxb2+i] == 2) {
+                                oxb2+=i;
+                                rTmpx=oxb2;
+                                rTmpy=oyb2;
+                                rewardOne();
+                                oxb2-=i;
+                                break;
+                            } else if(jlbsCode[oyb2][oxb2+i]==1){
+                                break;
+                            }
                         }
                     }
-                    c=true;
-                    BombTime2P.stop();
-                    twoPbt=0;
+
+                    b=true;
+                    BombTime1PT2.stop();
+                    onePbt2=0;
+                    countBomb--;
 
                 }
             }
         });
+        BombTime1PT3 = new Timer(150, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+                onePbt3++;
+                if(onePbt3>6){
+                    jlbs[oyb3][oxb3].setIcon(imgeFire);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3+i<=7) { //往下炸
+                            if (jlbsCode[oyb3 + i][oxb3] == 0 || jlbsCode[oyb3 + i][oxb3] > 2||jlbsCode[oyb3+i][oxb3]<0) {
+                                jlbs[oyb3 + i][oxb3].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb3 + i][oxb3] == 2) {
+                                jlbs[oyb3 + i][oxb3].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb3 +i][oxb3]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3-i>=0) { //往上炸
+                            if (jlbsCode[oyb3 - i][oxb3] == 0 || jlbsCode[oyb3 - i][oxb3] > 2||jlbsCode[oyb3-i][oxb3]<0) {
+                                jlbs[oyb3 - i][oxb3].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb3 - i][oxb3] == 2) {
+                                jlbs[oyb3 - i][oxb3].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb3 -i][oxb3]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3-i>=0) { //往左炸
+                            if (jlbsCode[oyb3][oxb3-i] == 0 || jlbsCode[oyb3][oxb3-i] > 2||jlbsCode[oyb3][oxb3-i]<0) {
+                                jlbs[oyb3][oxb3-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb3][oxb3-i] == 2) {
+                                jlbs[oyb3][oxb3-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb3][oxb3-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3+i<=7) { //往右炸
+                            if (jlbsCode[oyb3][oxb3+i] == 0 || jlbsCode[oyb3][oxb3+i] > 2||jlbsCode[oyb3][oxb3+i]<0) {
+                                jlbs[oyb3][oxb3+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb3][oxb3+i] == 2) {
+                                jlbs[oyb3][oxb3+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb3][oxb3+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    //判定腳色死亡
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3+i<=7) { //往下炸
+                            if (jlbsCode[oyb3 + i][oxb3] == 0 || jlbsCode[oyb3 + i][oxb3] > 2) {
+                                if (jlbsCode[oyb3 + i][oxb3] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb3 + i][oxb3] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb3 + i][oxb3] == 2||jlbsCode[oyb3 +i][oxb3]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3-i>=0) { //往上炸
+                            if (jlbsCode[oyb3 - i][oxb3] == 0 || jlbsCode[oyb3 - i][oxb3] > 2) {
+                                if (jlbsCode[oyb3 - i][oxb3] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb3 - i][oxb3] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb3 - i][oxb3] == 2||jlbsCode[oyb3 - i][oxb3]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3-i>=0) { //往左炸
+                            if (jlbsCode[oyb3][oxb3-i] == 0 || jlbsCode[oyb3][oxb3-i] > 2) {
+                                if (jlbsCode[oyb3][oxb3-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb3][oxb3-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb3][oxb3-i] == 2||jlbsCode[oyb3][oxb3-i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3+i<=7) { //往右炸
+                            if (jlbsCode[oyb3][oxb3+i] == 0 || jlbsCode[oyb3][oxb3+i] > 2) {
+                                if (jlbsCode[oyb3][oxb3+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb3][oxb3+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb3][oxb3+i] == 2||jlbsCode[oyb3][oxb3+i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    if (jlbsCode[oyb3][oxb3] == 6) { //中
+                        oPdie();
+                    }
+                }
+                if(onePbt3>7){
+                    //設定編碼 回復草地
+                    jlbsCode[oyb3][oxb3]=0;
+                    jlbs[oyb3][oxb3].setIcon(imgeGrass);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3+i<=7) { //往下炸
+                            if (jlbsCode[oyb3 + i][oxb3] == 0 || jlbsCode[oyb3 + i][oxb3] > 2||jlbsCode[oyb3+i][oxb3]<0) {
+                                jlbs[oyb3 + i][oxb3].setIcon(imgeGrass);
+                                jlbsCode[oyb3+i][oxb3] = 0;
+                            } else if (jlbsCode[oyb3 + i][oxb3] == 2) {
+
+                                oyb3+=i;
+                                rTmpx=oxb3;
+                                rTmpy=oyb3;
+                                rewardOne();
+                                oyb3-=i;
+                                break;
+                            } else if(jlbsCode[oyb3+i][oxb3]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb3-i>=0) { //往上炸
+                            if (jlbsCode[oyb3 - i][oxb3] == 0 || jlbsCode[oyb3 - i][oxb3] > 2||jlbsCode[oyb3-i][oxb3]<0) {
+                                jlbs[oyb3 - i][oxb3].setIcon(imgeGrass);
+                                jlbsCode[oyb3-i][oxb3] = 0;
+                            } else if (jlbsCode[oyb3 - i][oxb3] == 2) {
+                                oyb3-=i;
+                                rTmpx=oxb3;
+                                rTmpy=oyb3;
+                                rewardOne();
+                                oyb3+=i;
+                                break;
+                            } else if(jlbsCode[oyb3-i][oxb3]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3-i>=0) { //往左炸
+                            if (jlbsCode[oyb3][oxb3-i] == 0 || jlbsCode[oyb3][oxb3-i] > 2||jlbsCode[oyb3][oxb3-i]<0) {
+                                jlbs[oyb3][oxb3-i].setIcon(imgeGrass);
+                                jlbsCode[oyb3][oxb3-i] = 0;
+                            } else if (jlbsCode[oyb3][oxb3-i] == 2) {
+                                oxb3-=i;
+                                rTmpx=oxb3;
+                                rTmpy=oyb3;
+                                rewardOne();
+                                oxb3+=i;
+                                break;
+                            } else if(jlbsCode[oyb3][oxb3-i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb3+i<=7) { //往右炸
+                            if (jlbsCode[oyb3][oxb3+i] == 0 || jlbsCode[oyb3][oxb3+i] > 2||jlbsCode[oyb3][oxb3+i]<0) {
+                                jlbs[oyb3][oxb3+i].setIcon(imgeGrass);
+                                jlbsCode[oyb3][oxb3+i] = 0;
+                            } else if (jlbsCode[oyb3][oxb3+i] == 2) {
+                                oxb3+=i;
+                                rTmpx=oxb3;
+                                rTmpy=oyb3;
+                                rewardOne();
+                                oxb3-=i;
+                                break;
+                            } else if(jlbsCode[oyb3][oxb3+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    BombTime1PT3.stop();
+                    onePbt3=0;
+                    countBomb--;
+
+                }
+            }
+        });
+        BombTime1PT4 = new Timer(150, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+                onePbt4++;
+                if(onePbt4>6){
+                    jlbs[oyb4][oxb4].setIcon(imgeFire);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4+i<=7) { //往下炸
+                            if (jlbsCode[oyb4 + i][oxb4] == 0 || jlbsCode[oyb4 + i][oxb4] > 2||jlbsCode[oyb4+i][oxb4]<0) {
+                                jlbs[oyb4 + i][oxb4].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb4 + i][oxb4] == 2) {
+                                jlbs[oyb4 + i][oxb4].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb4 +i][oxb4]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4-i>=0) { //往上炸
+                            if (jlbsCode[oyb4 - i][oxb4] == 0 || jlbsCode[oyb4 - i][oxb4] > 2||jlbsCode[oyb4-i][oxb4]<0) {
+                                jlbs[oyb4 - i][oxb4].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb4 - i][oxb4] == 2) {
+                                jlbs[oyb4 - i][oxb4].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb4 -i][oxb4]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4-i>=0) { //往左炸
+                            if (jlbsCode[oyb4][oxb4-i] == 0 || jlbsCode[oyb4][oxb4-i] > 2||jlbsCode[oyb4][oxb4-i]<0) {
+                                jlbs[oyb4][oxb4-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb4][oxb4-i] == 2) {
+                                jlbs[oyb4][oxb4-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb4][oxb4-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4+i<=7) { //往右炸
+                            if (jlbsCode[oyb4][oxb4+i] == 0 || jlbsCode[oyb4][oxb4+i] > 2||jlbsCode[oyb4][oxb4+i]<0) {
+                                jlbs[oyb4][oxb4+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb4][oxb4+i] == 2) {
+                                jlbs[oyb4][oxb4+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb4][oxb4+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    //判定腳色死亡
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4+i<=7) { //往下炸
+                            if (jlbsCode[oyb4 + i][oxb4] == 0 || jlbsCode[oyb4 + i][oxb4] > 2) {
+                                if (jlbsCode[oyb4 + i][oxb4] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb4 + i][oxb4] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb4 + i][oxb4] == 2||jlbsCode[oyb4 +i][oxb4]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4-i>=0) { //往上炸
+                            if (jlbsCode[oyb4 - i][oxb4] == 0 || jlbsCode[oyb4 - i][oxb4] > 2) {
+                                if (jlbsCode[oyb4 - i][oxb4] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb4 - i][oxb4] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb4 - i][oxb4] == 2||jlbsCode[oyb4 - i][oxb4]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4-i>=0) { //往左炸
+                            if (jlbsCode[oyb4][oxb4-i] == 0 || jlbsCode[oyb4][oxb4-i] > 2) {
+                                if (jlbsCode[oyb4][oxb4-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb4][oxb4-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb4][oxb4-i] == 2||jlbsCode[oyb4][oxb4-i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4+i<=7) { //往右炸
+                            if (jlbsCode[oyb4][oxb4+i] == 0 || jlbsCode[oyb4][oxb4+i] > 2) {
+                                if (jlbsCode[oyb4][oxb4+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb4][oxb4+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb4][oxb4+i] == 2||jlbsCode[oyb4][oxb4+i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    if (jlbsCode[oyb4][oxb4] == 6) { //中
+                        oPdie();
+                    }
+                }
+                if(onePbt4>7){
+                    //設定編碼 回復草地
+                    jlbsCode[oyb4][oxb4]=0;
+                    jlbs[oyb4][oxb4].setIcon(imgeGrass);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4+i<=7) { //往下炸
+                            if (jlbsCode[oyb4 + i][oxb4] == 0 || jlbsCode[oyb4 + i][oxb4] > 2||jlbsCode[oyb4+i][oxb4]<0) {
+                                jlbs[oyb4 + i][oxb4].setIcon(imgeGrass);
+                                jlbsCode[oyb4+i][oxb4] = 0;
+                            } else if (jlbsCode[oyb4 + i][oxb4] == 2) {
+
+                                oyb4+=i;
+                                rTmpx=oxb4;
+                                rTmpy=oyb4;
+                                rewardOne();
+                                oyb4-=i;
+                                break;
+                            } else if(jlbsCode[oyb4+i][oxb4]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb4-i>=0) { //往上炸
+                            if (jlbsCode[oyb4 - i][oxb4] == 0 || jlbsCode[oyb4 - i][oxb4] > 2||jlbsCode[oyb4-i][oxb4]<0) {
+                                jlbs[oyb4 - i][oxb4].setIcon(imgeGrass);
+                                jlbsCode[oyb4-i][oxb4] = 0;
+                            } else if (jlbsCode[oyb4 - i][oxb4] == 2) {
+                                oyb4-=i;
+                                rTmpx=oxb4;
+                                rTmpy=oyb4;
+                                rewardOne();
+                                oyb4+=i;
+                                break;
+                            } else if(jlbsCode[oyb4-i][oxb4]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4-i>=0) { //往左炸
+                            if (jlbsCode[oyb4][oxb4-i] == 0 || jlbsCode[oyb4][oxb4-i] > 2||jlbsCode[oyb4][oxb4-i]<0) {
+                                jlbs[oyb4][oxb4-i].setIcon(imgeGrass);
+                                jlbsCode[oyb4][oxb4-i] = 0;
+                            } else if (jlbsCode[oyb4][oxb4-i] == 2) {
+                                oxb4-=i;
+                                rTmpx=oxb4;
+                                rTmpy=oyb4;
+                                rewardOne();
+                                oxb4+=i;
+                                break;
+                            } else if(jlbsCode[oyb4][oxb4-i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb4+i<=7) { //往右炸
+                            if (jlbsCode[oyb4][oxb4+i] == 0 || jlbsCode[oyb4][oxb4+i] > 2||jlbsCode[oyb4][oxb4+i]<0) {
+                                jlbs[oyb4][oxb4+i].setIcon(imgeGrass);
+                                jlbsCode[oyb4][oxb4+i] = 0;
+                            } else if (jlbsCode[oyb4][oxb4+i] == 2) {
+                                oxb4+=i;
+                                rTmpx=oxb4;
+                                rTmpy=oyb4;
+                                rewardOne();
+                                oxb4-=i;
+                                break;
+                            } else if(jlbsCode[oyb4][oxb4+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    BombTime1PT4.stop();
+                    onePbt4=0;
+                    countBomb--;
+
+                }
+            }
+        });
+        BombTime1PT5 = new Timer(150, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+                onePbt5++;
+                if(onePbt5>6){
+                    jlbs[oyb5][oxb5].setIcon(imgeFire);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5+i<=7) { //往下炸
+                            if (jlbsCode[oyb5 + i][oxb5] == 0 || jlbsCode[oyb5 + i][oxb5] > 2||jlbsCode[oyb5+i][oxb5]<0) {
+                                jlbs[oyb5 + i][oxb5].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb5 + i][oxb5] == 2) {
+                                jlbs[oyb5 + i][oxb5].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb5 +i][oxb5]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5-i>=0) { //往上炸
+                            if (jlbsCode[oyb5 - i][oxb5] == 0 || jlbsCode[oyb5 - i][oxb5] > 2||jlbsCode[oyb5-i][oxb5]<0) {
+                                jlbs[oyb5 - i][oxb5].setIcon(imgefireWS);
+                            } else if (jlbsCode[oyb5 - i][oxb5] == 2) {
+                                jlbs[oyb5 - i][oxb5].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[oyb5 -i][oxb5]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5-i>=0) { //往左炸
+                            if (jlbsCode[oyb5][oxb5-i] == 0 || jlbsCode[oyb5][oxb5-i] > 2||jlbsCode[oyb5][oxb5-i]<0) {
+                                jlbs[oyb5][oxb5-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb5][oxb5-i] == 2) {
+                                jlbs[oyb5][oxb5-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb5][oxb5-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5+i<=7) { //往右炸
+                            if (jlbsCode[oyb5][oxb5+i] == 0 || jlbsCode[oyb5][oxb5+i] > 2||jlbsCode[oyb5][oxb5+i]<0) {
+                                jlbs[oyb5][oxb5+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[oyb5][oxb5+i] == 2) {
+                                jlbs[oyb5][oxb5+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[oyb5][oxb5+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    //判定腳色死亡
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5+i<=7) { //往下炸
+                            if (jlbsCode[oyb5 + i][oxb5] == 0 || jlbsCode[oyb5 + i][oxb5] > 2) {
+                                if (jlbsCode[oyb5 + i][oxb5] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb5 + i][oxb5] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb5 + i][oxb5] == 2||jlbsCode[oyb5 +i][oxb5]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5-i>=0) { //往上炸
+                            if (jlbsCode[oyb5 - i][oxb5] == 0 || jlbsCode[oyb5 - i][oxb5] > 2) {
+                                if (jlbsCode[oyb5 - i][oxb5] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb5 - i][oxb5] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb5 - i][oxb5] == 2||jlbsCode[oyb5 - i][oxb5]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5-i>=0) { //往左炸
+                            if (jlbsCode[oyb5][oxb5-i] == 0 || jlbsCode[oyb5][oxb5-i] > 2) {
+                                if (jlbsCode[oyb5][oxb5-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb5][oxb5-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb5][oxb5-i] == 2||jlbsCode[oyb5][oxb5-i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5+i<=7) { //往右炸
+                            if (jlbsCode[oyb5][oxb5+i] == 0 || jlbsCode[oyb5][oxb5+i] > 2) {
+                                if (jlbsCode[oyb5][oxb5+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[oyb5][oxb5+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[oyb5][oxb5+i] == 2||jlbsCode[oyb5][oxb5+i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    if (jlbsCode[oyb5][oxb5] == 6) { //中
+                        oPdie();
+                    }
+                }
+                if(onePbt5>7){
+                    //設定編碼 回復草地
+                    jlbsCode[oyb5][oxb5]=0;
+                    jlbs[oyb5][oxb5].setIcon(imgeGrass);
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5+i<=7) { //往下炸
+                            if (jlbsCode[oyb5 + i][oxb5] == 0 || jlbsCode[oyb5 + i][oxb5] > 2||jlbsCode[oyb5+i][oxb5]<0) {
+                                jlbs[oyb5 + i][oxb5].setIcon(imgeGrass);
+                                jlbsCode[oyb5+i][oxb5] = 0;
+                            } else if (jlbsCode[oyb5 + i][oxb5] == 2) {
+
+                                oyb5+=i;
+                                rTmpx=oxb5;
+                                rTmpy=oyb5;
+                                rewardOne();
+                                oyb5-=i;
+                                break;
+                            } else if(jlbsCode[oyb5+i][oxb5]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oyb5-i>=0) { //往上炸
+                            if (jlbsCode[oyb5 - i][oxb5] == 0 || jlbsCode[oyb5 - i][oxb5] > 2||jlbsCode[oyb5-i][oxb5]<0) {
+                                jlbs[oyb5 - i][oxb5].setIcon(imgeGrass);
+                                jlbsCode[oyb5-i][oxb5] = 0;
+                            } else if (jlbsCode[oyb5 - i][oxb5] == 2) {
+                                oyb5-=i;
+                                rTmpx=oxb5;
+                                rTmpy=oyb5;
+                                rewardOne();
+                                oyb5+=i;
+                                break;
+                            } else if(jlbsCode[oyb5-i][oxb5]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5-i>=0) { //往左炸
+                            if (jlbsCode[oyb5][oxb5-i] == 0 || jlbsCode[oyb5][oxb5-i] > 2||jlbsCode[oyb5][oxb5-i]<0) {
+                                jlbs[oyb5][oxb5-i].setIcon(imgeGrass);
+                                jlbsCode[oyb5][oxb5-i] = 0;
+                            } else if (jlbsCode[oyb5][oxb5-i] == 2) {
+                                oxb5-=i;
+                                rTmpx=oxb5;
+                                rTmpy=oyb5;
+                                rewardOne();
+                                oxb5+=i;
+                                break;
+                            } else if(jlbsCode[oyb5][oxb5-i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<onefireQua+1;i++){
+                        if(oxb5+i<=7) { //往右炸
+                            if (jlbsCode[oyb5][oxb5+i] == 0 || jlbsCode[oyb5][oxb5+i] > 2||jlbsCode[oyb5][oxb5+i]<0) {
+                                jlbs[oyb5][oxb5+i].setIcon(imgeGrass);
+                                jlbsCode[oyb5][oxb5+i] = 0;
+                            } else if (jlbsCode[oyb5][oxb5+i] == 2) {
+                                oxb5+=i;
+                                rTmpx=oxb5;
+                                rTmpy=oyb5;
+                                rewardOne();
+                                oxb5-=i;
+                                break;
+                            } else if(jlbsCode[oyb5][oxb5+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    BombTime1PT5.stop();
+                    onePbt5=0;
+                    countBomb--;
+
+                }
+            }
+        });
+
+
+
+
+
+
+
+
+        BombTime2PT1 = new Timer(150, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                twoPbt1++;
+
+                if(twoPbt1>6){
+                    jlbs[tyb1][txb1].setIcon(imgeFire);
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1+i<=7) { //往下炸
+                            if (jlbsCode[tyb1 + i][txb1] == 0 || jlbsCode[tyb1 + i][txb1] > 2||jlbsCode[tyb1+i][txb1]<0) {
+                                jlbs[tyb1 + i][txb1].setIcon(imgefireWS);
+                            } else if (jlbsCode[tyb1 + i][txb1] == 2) {
+                                jlbs[tyb1 + i][txb1].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[tyb1 +i][txb1]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1-i>=0) { //往上炸
+                            if (jlbsCode[tyb1 - i][txb1] == 0 || jlbsCode[tyb1 - i][txb1] > 2||jlbsCode[tyb1-i][txb1]<0) {
+                                jlbs[tyb1 - i][txb1].setIcon(imgefireWS);
+                            } else if (jlbsCode[tyb1 - i][txb1] == 2) {
+                                jlbs[tyb1 - i][txb1].setIcon(imgefireWS);
+                                break;
+                            }else if(jlbsCode[tyb1 -i][txb1]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1-i>=0) { //往左炸
+                            if (jlbsCode[tyb1][txb1-i] == 0 || jlbsCode[tyb1][txb1-i] > 2||jlbsCode[tyb1][txb1-i]<0) {
+                                jlbs[tyb1][txb1-i].setIcon(imgefireAD);
+                            } else if (jlbsCode[tyb1][txb1-i] == 2) {
+                                jlbs[tyb1][txb1-i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[tyb1][txb1-i]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1+i<=7) { //往右炸
+                            if (jlbsCode[tyb1][txb1+i] == 0 || jlbsCode[tyb1][txb1+i] > 2||jlbsCode[tyb1][txb1+i]<0) {
+                                jlbs[tyb1][txb1+i].setIcon(imgefireAD);
+                            } else if (jlbsCode[tyb1][txb1+i] == 2) {
+                                jlbs[tyb1][txb1+i].setIcon(imgefireAD);
+                                break;
+                            }else if(jlbsCode[tyb1][txb1+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    //判定腳色死亡
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1+i<=7) { //往下炸
+                            if (jlbsCode[tyb1 + i][txb1] == 0 || jlbsCode[tyb1 + i][txb1] > 2) {
+                                if (jlbsCode[tyb1 + i][txb1] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[tyb1 + i][txb1] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[tyb1 + i][txb1] == 2||jlbsCode[tyb1 +i][txb1]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1-i>=0) { //往上炸
+                            if (jlbsCode[tyb1 - i][txb1] == 0 || jlbsCode[tyb1 - i][txb1] > 2) {
+                                if (jlbsCode[tyb1 - i][txb1] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[tyb1 - i][txb1] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[tyb1 - i][txb1] == 2||jlbsCode[tyb1 - i][txb1]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1-i>=0) { //往左炸
+                            if (jlbsCode[tyb1][txb1-i] == 0 || jlbsCode[tyb1][txb1-i] > 2) {
+                                if (jlbsCode[tyb1][txb1-i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[tyb1][txb1-i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[tyb1][txb1-i] == 2||jlbsCode[tyb1][txb1-i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1+i<=7) { //往右炸
+                            if (jlbsCode[tyb1][txb1+i] == 0 || jlbsCode[tyb1][txb1+i] > 2) {
+                                if (jlbsCode[tyb1][txb1+i] == 3) { //下
+                                    oPdie();
+                                } else if (jlbsCode[tyb1][txb1+i] == 4) {
+                                    tPdie();
+                                }
+                            } else if (jlbsCode[tyb1][txb1+i] == 2||jlbsCode[tyb1][txb1+i]==1) {
+                                break;
+
+                            }
+                        }
+                    }
+                    if (jlbsCode[tyb1][txb1] == 6) { //中
+                        oPdie();
+                    }
+                }
+                if(twoPbt1>7){
+                    //設定編碼 回復草地
+                    jlbsCode[tyb1][txb1]=0;
+                    jlbs[tyb1][txb1].setIcon(imgeGrass);
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1+i<=7) { //往下炸
+                            if (jlbsCode[tyb1 + i][txb1] == 0 || jlbsCode[tyb1 + i][txb1] > 2||jlbsCode[tyb1+i][txb1]<0) {
+                                jlbs[tyb1 + i][txb1].setIcon(imgeGrass);
+                                jlbsCode[tyb1+i][txb1] = 0;
+                            } else if (jlbsCode[tyb1 + i][txb1] == 2) {
+                                tyb1+=i;
+                                rewardTwo();
+                                tyb1-=i;
+                                break;
+                            } else if(jlbsCode[tyb1+i][txb1]==1){
+                                break;
+                            }
+                        }
+                    }
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(tyb1-i>=0) { //往上炸
+                            if (jlbsCode[tyb1 - i][txb1] == 0 || jlbsCode[tyb1 - i][txb1] > 2||jlbsCode[tyb1-i][txb1]<0) {
+                                jlbs[tyb1 - i][txb1].setIcon(imgeGrass);
+                                jlbsCode[tyb1-i][txb1] = 0;
+                            } else if (jlbsCode[tyb1 - i][txb1] == 2) {
+                                tyb1-=i;
+                                rewardTwo();
+                                tyb1+=i;
+                                break;
+                            } else if(jlbsCode[tyb1-i][txb1]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1-i>=0) { //往左炸
+                            if (jlbsCode[tyb1][txb1-i] == 0 || jlbsCode[tyb1][txb1-i] > 2||jlbsCode[tyb1][txb1-i]<0) {
+                                jlbs[tyb1][txb1-i].setIcon(imgeGrass);
+                                jlbsCode[tyb1][txb1-i] = 0;
+                            } else if (jlbsCode[tyb1][txb1-i] == 2) {
+                                txb1-=i;
+                                rewardTwo();
+                                txb1+=i;
+                                break;
+                            } else if(jlbsCode[tyb1][txb1-i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+                    for(int i=1;i<twofireQua+1;i++){
+                        if(txb1+i<=7) { //往右炸
+                            if (jlbsCode[tyb1][txb1+i] == 0 || jlbsCode[tyb1][txb1+i] > 2||jlbsCode[tyb1][txb1+i]<0) {
+                                jlbs[tyb1][txb1+i].setIcon(imgeGrass);
+                                jlbsCode[tyb1][txb1+i] = 0;
+                            } else if (jlbsCode[tyb1][txb1+i] == 2) {
+                                txb1+=i;
+                                rewardTwo();
+                                txb1-=i;
+                                break;
+                            } else if(jlbsCode[tyb1][txb1+i]==1){
+                                break;
+                            }
+                        }
+                    }
+
+
+                    c=true;
+                    BombTime2PT1.stop();
+                    twoPbt1=0;
+
+                }
+            }
+        });
+
+
+
 
 
 
@@ -608,21 +1650,21 @@ public class MainFrame extends JFrame {
     public void countOne(){
         if(onebombQua<5&&jlbsCode[y1][x1]==-2){
             onebombQua++;
-           // System.out.println("1P炸彈"+onebombQua);
+            System.out.println("1P炸彈"+onebombQua);
         }
         if(onefireQua<5&&jlbsCode[y1][x1]==-1){
             onefireQua++;
-          //  System.out.println("1P火力"+onefireQua);
+            System.out.println("1P火力"+onefireQua);
         }
     }
     public void countTwo(){
         if(twobombQua<5&&jlbsCode[y2][x2]==-2){
             twobombQua++;
-          //  System.out.println("2P炸彈"+twobombQua);
+            //  System.out.println("2P炸彈"+twobombQua);
         }
         if(twofireQua<5&&jlbsCode[y2][x2]==-1){
             twofireQua++;
-           // System.out.println("2P火力"+twofireQua);
+            // System.out.println("2P火力"+twofireQua);
         }
     }
     public  void rewardOne(){
@@ -630,15 +1672,15 @@ public class MainFrame extends JFrame {
 
         reward=rnd.nextInt(10)+1;
         //System.out.println(reward);
-        if(reward<11){
-            jlbs[oyb][oxb].setIcon(imgefirePlus);
-            jlbsCode[oyb][oxb]=-1;
+        if(reward<4){
+            jlbs[rTmpy][rTmpx].setIcon(imgefirePlus);
+            jlbsCode[rTmpy][rTmpx]=-1;
         }else if(reward>5) {
-            jlbs[oyb][oxb].setIcon(imgebombPlus);
-            jlbsCode[oyb][oxb] = -2;
+            jlbs[rTmpy][rTmpx].setIcon(imgebombPlus);
+            jlbsCode[rTmpy][rTmpx] = -2;
         }else if(reward==4||reward==5){
-            jlbs[oyb][oxb].setIcon(imgeGrass);
-            jlbsCode[oyb][oxb]=0;
+            jlbs[rTmpy][rTmpx].setIcon(imgeGrass);
+            jlbsCode[rTmpy][rTmpx]=0;
         }
     }
     public  void rewardTwo(){
@@ -646,25 +1688,33 @@ public class MainFrame extends JFrame {
 
         reward=rnd.nextInt(10)+1;
         if(reward<4){
-            jlbs[tyb][txb].setIcon(imgefirePlus);
-            jlbsCode[tyb][txb]=-1;
+            jlbs[tyb1][txb1].setIcon(imgefirePlus);
+            jlbsCode[tyb1][txb1]=-1;
         }else if(reward>5) {
-            jlbs[tyb][txb].setIcon(imgebombPlus);
-            jlbsCode[tyb][txb] =-2;
+            jlbs[tyb1][txb1].setIcon(imgebombPlus);
+            jlbsCode[tyb1][txb1] =-2;
         }else if(reward==4||reward==5){
-            jlbs[tyb][txb].setIcon(imgeGrass);
-            jlbsCode[tyb][txb]=0;
+            jlbs[tyb1][txb1].setIcon(imgeGrass);
+            jlbsCode[tyb1][txb1]=0;
         }
     }
     public void oPdie(){
-        BombTime1P.stop();
-        BombTime2P.stop();
+        BombTime1PT1.stop();
+        BombTime1PT2.stop();
+        BombTime1PT3.stop();
+        BombTime1PT4.stop();
+        BombTime1PT5.stop();
+        BombTime2PT1.stop();
         JOptionPane.showMessageDialog(null, "1P死亡", "遊戲結束", JOptionPane.ERROR_MESSAGE);
         restart();
     }
     public void tPdie(){
-        BombTime1P.stop();
-        BombTime2P.stop();
+        BombTime1PT1.stop();
+        BombTime1PT2.stop();
+        BombTime1PT3.stop();
+        BombTime1PT4.stop();
+        BombTime1PT5.stop();
+        BombTime2PT1.stop();
         JOptionPane.showMessageDialog(null, "2P死亡", "遊戲結束", JOptionPane.ERROR_MESSAGE);
         restart();
     }
@@ -699,13 +1749,13 @@ public class MainFrame extends JFrame {
         jlbsCode[7][7]=4;
         jlbs[0][0].setIcon(imge1pS);
         jlbs[7][7].setIcon(imge2pS);
-        onePbt =0;
-        twoPbt =0;
-         oxb =0;
-         oyb =0;
-        txb =0;
-        tyb =0;
-        b = true;
+        onePbt1 =0;
+        twoPbt1 =0;
+        oxb1 =0;
+        oyb1 =0;
+        txb1 =0;
+        tyb1 =0;
+
         c = true;
         x1 = 0;
         y1 = 0;
@@ -715,6 +1765,8 @@ public class MainFrame extends JFrame {
         onefireQua = 1;
         twobombQua = 1;
         twofireQua = 1;
+        countBomb =0;
+        queueBomb =1;
     }
 
 
